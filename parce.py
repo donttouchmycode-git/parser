@@ -5,7 +5,6 @@ import csv
 heads_list = []
 prices_list = []
 pictureLinks_list = []
-total = [heads_list, prices_list, pictureLinks_list]
 
 for j in range (12):
     j += 1
@@ -24,6 +23,6 @@ for j in range (12):
 print('Parsing complete. Wait for file creating')
 
 
-with open('/home/user/parce.csv', "w") as csv_file:
+with open('parce.csv', "w") as csv_file:
     writer = csv.writer(csv_file, delimiter=';')
     writer.writerows(zip(heads_list, prices_list, pictureLinks_list))
