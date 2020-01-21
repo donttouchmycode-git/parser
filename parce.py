@@ -1,28 +1,47 @@
 from lxml import html
 import requests
 import csv
+import time
+import os
 
-heads_list = []         #headers list
-prices_list = []        #prices lis
-pictureLinks_list = []  #picture links list
+heads_list = []
+prices_list = []
+pictureLinks_list = []
+product_links = []
+filename_list = []
+output_directory = '/home/user/parcer/img/'
 
-for j in range (12):     #pagination (13 pages)
+for j in range (12):
     j += 1
-    page = requests.get('https://navi-expert.ru/product_list/page_'+str(j)+'?bss0=2381')    
+    page = requests.get('https://navi-expert.ru/product_list/page_'+str(j)+'?bss0=2381')
     tree = html.fromstring(page.content)
 
-    for i in range(23): #products on page (24 items)
+    for i in range(23):
         i += 1
-        heads = tree.xpath('/html/body/div[6]/div[2]/div[1]/div/ul/li['+str(i)+']/a[5]')[0].text            #product header xpath addres
-        prices = tree.xpath('/html/body/div[6]/div[2]/div[1]/div/ul/li['+str(i)+']/div[2]/span')[0].text    #proguct price xpath addres
-        pictureLinks = tree.xpath('/html/body/div[6]/div[2]/div[1]/div/ul/li['+str(i)+']/a[4]/img/@src')    #proguct picture link xpath addres
+        heads = tree.xpath('/html/body/div[6]/div[2]/div[1]/div/ul/li['+str(i)+']/a[5]')[0].text
+        product_link = tree.xpath('/html/body/div[6]/div[2]/div/div/ul/li['+str(i)+']/a[5]')[0].get('href')
+        prices = tree.xpath('/html/body/div[6]/div[2]/div[1]/div/ul/li['+str(i)+']/div[2]/span')[0].text
+        pictureLinks1 = str(tree.xpath('/html/body/div[6]/div[2]/div[1]/div/ul/li['+str(i)+']/a[4]/img/@src'))
+        pictureLinks2 = str(tree.xpath('/html/body/div[6]/div[2]/div[1]/div/ul/li['+str(i)+']/a[4]/img/@longdesc'))
+        if "static" in pictureLinks1:
+            pictureLinks = pictureLinks2
+        else:
+            pictureLinks = pictureLinks1
+        pictureLinks = pictureLinks.replace('w200_h200', 'w640_h640')
+        filename = pictureLinks.split("/")[-1][:-2]
+        url = str(pictureLinks)[1:-1]
+        #print(filename)
+        #print(pictureLinks)
+        #print(url)
+        #os.system('cd /home/user/parcer/img && wget '+ url)
         heads_list.append(heads)
         prices_list.append(prices)
         pictureLinks_list.append(pictureLinks)
+        filename_list.append(filename)
 
-print('Parsing complete. Wait for file creating')   #Successful message
+print('Parsing complete. Wait for file creating')
 
 
-with open('parce.csv', "w") as csv_file:                                #write result to .csv file...
+with open('/home/user/parcer/parce.csv', "w") as csv_file:
     writer = csv.writer(csv_file, delimiter=';')
-    writer.writerows(zip(heads_list, prices_list, pictureLinks_list))   #... in 3 columns
+    writer.writerows(zip(heads_list, prices_list, filename_list))
