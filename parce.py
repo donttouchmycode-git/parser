@@ -1,7 +1,6 @@
 from lxml import html
 import requests
 import csv
-import time
 import os
 
 heads_list = []
@@ -33,7 +32,7 @@ for j in range (12):
         #print(filename)
         #print(pictureLinks)
         #print(url)
-        #os.system('cd /home/user/parcer/img && wget '+ url)
+        os.system('cd /home/user/parcer/img && wget '+ url)    #comment this string if only data save needed without downloading images
         heads_list.append(heads)
         prices_list.append(prices)
         pictureLinks_list.append(pictureLinks)
